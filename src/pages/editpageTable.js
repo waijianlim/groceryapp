@@ -129,6 +129,16 @@ class TextFields extends React.Component {
         });
     };
 
+    handleNumberChange = name => event =>{
+        const re = /^[0-9\b]+$/;
+
+        if (event.target.value === '' || re.test(event.target.value)) {
+           this.setState({
+                [name]: event.target.value
+            })
+        }
+    }
+
     render() {
         const { classes } = this.props;
 
@@ -142,9 +152,8 @@ class TextFields extends React.Component {
                 <TextField
                     required
                     id="standard-name"
-                    label="Name"
+                    label="Product Name"
                     error={this.state.name.length<=0}
-                    placeholder="Placeholder"
                     value={this.state.name}
                     onChange={this.handleChange("name")}
                     InputLabelProps={{
@@ -158,13 +167,14 @@ class TextFields extends React.Component {
                     required
                     id="standard-brand"
                     label="Brand"
+                    error={this.state.brand.length<=0}
                     value={this.state.brand}
                     onChange={this.handleChange("brand")}
                     InputLabelProps={{
                         shrink: true
                     }}
                     className={classes.textField}
-                    helperText="This field is required."
+                    helperText={this.state.brand.length<=0?"This field is required.":""}
                     margin="normal"
                 />
                 <TextField
@@ -197,7 +207,6 @@ class TextFields extends React.Component {
                     value={this.state.price}
                     onChange={this.handleChange("price")}
                     type="number"
-                    defaultValue={123456231}
                     className={classes.textField}
                     InputLabelProps={{
                         shrink: true
@@ -208,8 +217,7 @@ class TextFields extends React.Component {
                     id="standard-number"
                     label="UPC12 Barcode"
                     value={this.state.barcode}
-                    onChange={this.handleChange("barcode")}
-                    defaultValue="123456231"
+                    onChange={this.handleNumberChange("barcode")}
                     className={classes.textField}
                     InputLabelProps={{
                         shrink: true
