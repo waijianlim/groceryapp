@@ -77,7 +77,6 @@ const styles = theme => ({
 
 
 function SearchAppBar(props) {
-  console.log('HELLO',props)
 const { classes } = props;
 return (
   <div className={classes.root}>
