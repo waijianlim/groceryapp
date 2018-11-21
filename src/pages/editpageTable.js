@@ -104,7 +104,7 @@ class SaveDialog extends React.Component {
                 </Dialog>
 
             {/* CANCEL BUTTON */}
-          <Button href="/" variant="contained" color="default" className={classes.button}>
+          <Button href="/store" variant="contained" color="default" className={classes.button}>
                     CANCEL
                 </Button>
             </div>
@@ -168,7 +168,7 @@ class TextFields extends React.Component {
     }
 
     getProductById = function (id) {
-        return data.products.filter(e => e.id == id)[0];
+        return data.products.filter(e => e.id === parseInt(id))[0];
     }
 
     handleChange = name => event => {
@@ -192,6 +192,7 @@ class TextFields extends React.Component {
                     required
                     id="standard-name"
                     label="Name"
+                    error={this.state.name.length<=0}
                     placeholder="Placeholder"
                     value={this.state.name}
                     onChange={this.handleChange("name")}
@@ -199,7 +200,7 @@ class TextFields extends React.Component {
                         shrink: true
                     }}
                     className={classes.textField}
-                    helperText="This field is required."
+                    helperText={this.state.name.length<=0?"This field is required.":""}
                     margin="normal"
                 />
                 <TextField

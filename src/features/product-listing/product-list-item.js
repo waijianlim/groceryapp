@@ -1,27 +1,23 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import ButtonONLY from './buttonONLY';
 
-
-const EditNavigation = (props) => { 
-    return <nav>
-            <NavLink to={`/editItem/${props.id}`} >Edit</NavLink>
-        </nav>
-  }
 
 export default function ProductListItem(props) {
-    const thisItemInCart = props.cart.filter(item => item.id === props.product.id)[0]
     return <div className = 'product-list-item'>
         <h3> { props.name } </h3>
         <img
-            height={100}
+            height={80}
             title= { props.product.name }
             src={`/products/${props.product.image}`}
+            alt= 'Item'
             />
-        <div>{ props.product.description }</div>
+        <div>{ props.product.name }</div>
+        <div>{ props.product.brand }</div>
         <div>{`${props.product.currencyLabel}${props.product.price}`}</div>
         <div>
-            <EditNavigation id={props.product.id}/>
+            <ButtonONLY product={props.product}/>
         </div>
     </div>
 
 }
+

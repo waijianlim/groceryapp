@@ -50,7 +50,7 @@ import EditTextField from './editpageTable'
 export default function EditPage(props) {
     console.log(props)
     return <div>
-        <h2>Edit Item:</h2>
+        <h2>Edit Item</h2>
         <EditTextField id={props.match.params.id} />
     </div>
 }

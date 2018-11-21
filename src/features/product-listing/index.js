@@ -1,7 +1,5 @@
 import React from 'react'
 import ProductListItem from './product-list-item'
-import { connect } from 'react-redux'
-import { cartItemsWithQuantities } from '../cart'
 
 
 function ProductListing(props) {
@@ -11,29 +9,10 @@ function ProductListing(props) {
                 <ProductListItem 
                 product={product}
                 key = {product.id}
-                addToCart={props.addToCart}
-                cart={cartItemsWithQuantities(props.cart)}
                  />)
         }
     </div>
 }
 
 
-function mapStateToProps(state) {
-    return {
-        cart: state.cart
-    }
-}
-
-function mapDispatchToProps(dispatch) {
-    return {
-        addToCart: (item) => {
-            dispatch({ type: 'ADD', payload: item })
-        },
-        removeFromCart: (item) => {
-            dispatch({ type: 'REMOMVE', payload: item})
-        }
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProductListing)
+export default ProductListing
