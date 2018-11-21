@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
+import EditIcoon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -44,7 +44,7 @@ class EditDeleteButton extends React.Component {
             return (
                 <div>
                     <Button href={'/editItem/'+ classes.product.id} variant="fab" color="secondary" aria-label="Edit" className={classes.classes.button}>
-          <Icon>edit_icon</Icon>
+          <EditIcoon/>
         </Button>
                     <Button variant="fab" aria-label="Delete" className={classes.classes.button} onClick={this.handleClickOpen}>
                         <DeleteIcon />
