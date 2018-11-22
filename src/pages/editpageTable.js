@@ -6,19 +6,22 @@ import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
+import {Link} from 'react-router-dom';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
-import data from '../data/products.json'
+import ProductService from '../product-service';
 
 const styles = theme => ({
     container: {
         display: "flex",
-        flexWrap: "wrap"
+        flexWrap: "wrap",
+    },
+    form:{
+        margin: 20
     },
     textField: {
         marginLeft: theme.spacing.unit,
@@ -59,8 +62,10 @@ const currencies = [
 // SAVE DIALOG
 class SaveDialog extends React.Component {
 
+    
+
     state = {
-        open: false,
+        open: false
     };
 
     handleClickOpen = () => {
@@ -71,12 +76,29 @@ class SaveDialog extends React.Component {
         this.setState({ open: false });
     };
 
+    handleSaveClose = () => {
+        let service = ProductService.getInstance();
+        service.updateItem(this.props.product);
+    }
+      
+    callBackendAPI = async () => {
+      const response = await fetch('/item/:id');
+      const body = await response.json();
+  
+      if (response.status !== 200) {
+        throw Error(body.message) 
+      }
+      return body;
+    };
+
+   
     render() {
         const { classes } = this.props;
+        const isEnabled = this.props.product.name.length > 0 && this.props.product.brand.length > 0;
         return (
-            <div>
+            <div className={classes.root}>
                 {/* SAVE BUTTON */}
-                <Button variant="contained" color="primary" className={classes.button} onClick={this.handleClickOpen}>
+                <Button disabled={!isEnabled} variant="contained" color="primary" className={classes.button} onClick={this.handleClickOpen}>
                     <SaveIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
                     Save
           </Button>
@@ -93,7 +115,7 @@ class SaveDialog extends React.Component {
               </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
+                        <Button onClick={this.handleSaveClose} component={Link} to='/listview' color="primary">
                             Save
               </Button>
                         <Button onClick={this.handleClose} color="primary" autoFocus>
@@ -103,7 +125,7 @@ class SaveDialog extends React.Component {
                 </Dialog>
 
             {/* CANCEL BUTTON */}
-          <Button href="/store" variant="contained" color="default" className={classes.button}>
+          <Button component={Link} to="/listview" variant="contained" color="default" className={classes.button}>
                     CANCEL
                 </Button>
             </div>
@@ -117,10 +139,12 @@ class TextFields extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.getProductById(this.props.id);
+        console.log ('TextFields', this.state)
     }
 
     getProductById = function (id) {
-        return data.products.filter(e => e.id === parseInt(id))[0];
+        let service = ProductService.getInstance();
+        return service.getProductById(id);
     }
 
     handleChange = name => event => {
@@ -224,7 +248,7 @@ class TextFields extends React.Component {
                     }}
                     margin="normal"
                 />
-                <SaveDialog classes={classes}/>
+                <SaveDialog classes={classes} product={this.state}/>
 
             </form>
         );

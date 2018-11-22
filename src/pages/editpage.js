@@ -1,56 +1,28 @@
-import React from 'react'
+import React, {Component} from 'react'
 import EditTextField from './editpageTable'
+import classNames from "classnames";
+import { withStyles } from "@material-ui/core/styles";
 
-// import PropTypes from 'prop-types';
-// import classNames from 'classnames';
-// import Button from '@material-ui/core/Button';
-// import { withStyles } from '@material-ui/core/styles';
-// import DeleteIcon from '@material-ui/icons/Delete';
-// import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-// import KeyboardVoiceICon from '@material-ui/icons/KeyboardVoice';
-// import Icon from '@material-ui/core/Icon';
-// import SaveIcon from '@material-ui/icons/Save';
+const styles = theme => ({
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        overflow: 'hidden',
+        paddingLeft: 15,
+        padding: 15,
+    }
+});
 
-// const styles = theme => ({
-//   button: {
-//     margin: theme.spacing.unit,
-//   },
-//   leftIcon: {
-//     marginRight: theme.spacing.unit,
-//   },
-//   rightIcon: {
-//     marginLeft: theme.spacing.unit,
-//   },
-//   iconSmall: {
-//     fontSize: 20,
-//   },
-// });
 
-// class SaveBox extends React.Component{
-// 	state = {userName: ''}
-
-// 	handleSubmit = (event) => {
-//   	event.preventDefault()
-    
-//   }
-
-// 	render(){
-//   	return(
-//     	<form onSubmit={this.handleSubmit}>
-//     	  <input type="text" 
-//         	value={this.state.userName}
-//           onChange={(event) => this.setState({ userName: event.target.value})}
-//         	placeholder="Search products..." required />
-//         <button type="submit">Go</button>
-//     	</form>
-//       )
-//   }
-// }
-
-export default function EditPage(props) {
-    return <div>
+class EditPage extends React.Component {
+    render() {
+    const { classes } = this.props;
+    return <div className={classes.root}>
         <h2>Edit Item</h2>
-        <EditTextField id={props.match.params.id} />
+        <EditTextField id={this.props.match.params.id} />
     </div>
 }
+}
 
+export default withStyles(styles)(EditPage);

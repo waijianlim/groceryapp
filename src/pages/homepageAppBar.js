@@ -5,12 +5,15 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
+import Dashboard from '@material-ui/icons/Dashboard';
+import ListAlt from '@material-ui/icons/ListAlt';
 import Button from '@material-ui/core/Button';
+import {Link} from 'react-router-dom';
 
 const styles = theme => ({
   root: {
@@ -21,7 +24,7 @@ const styles = theme => ({
   },
   menuButton: {
     marginLeft: -12,
-    marginRight: 20,
+    marginRight: 23,
   },
   title: {
     display: 'none',
@@ -72,11 +75,70 @@ const styles = theme => ({
   },
 });
 
+class MenuHandlerButton extends React.Component {
+  state = {
+    mobileMoreAnchorEl: null,
+  };
+
+  handleMobileMenuOpen = event => {
+    this.setState({ mobileMoreAnchorEl: event.currentTarget });
+  };
+
+  handleMobileMenuClose = () => {
+    this.setState({ mobileMoreAnchorEl: null });
+  };
+
+  render() {
+    const { mobileMoreAnchorEl } = this.state;
+    const { classes } = this.props;
+    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+    const renderMobileMenu = (
+      <Menu
+        anchorEl={mobileMoreAnchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={isMobileMenuOpen}
+        onClose={this.handleMobileMenuClose}
+      >
+        <MenuItem>
+          <IconButton color="inherit"  component={Link} to="/listview" onClick={this.handleMobileMenuClose}>
+              <ListAlt />
+          </IconButton>
+          <p>List View</p>
+        </MenuItem>
+        <MenuItem component={Link} to="/dashboard" onClick={this.handleMobileMenuClose}>
+          <IconButton  color="inherit">
+              <Dashboard />
+          </IconButton>
+          <p>Dashboard</p>
+        </MenuItem>
+        
+      </Menu>
+    );
+
+    return (
+      <div>
+            <div className={classes.grow} />
+            <div className={classes.sectionDesktop}>
+            <IconButton color="inherit" component={Link} to="/listView">
+                  <ListAlt />
+              </IconButton>
+              <IconButton color="inherit" component={Link} to="/dashboard">
+                  <Dashboard />
+              </IconButton>  
+            </div>
+        {renderMobileMenu}
+      </div>
+    );
+  }
+}
+
+const MenuHandler = withStyles(styles)(MenuHandlerButton)
 
 function SearchAppBar(props) {
 const { classes } = props;
-console.log("CLASS",classes)
-console.log("PROPS",props)
+console.log('CLASSSSS', props.classes)
 return (
   <div className={classes.root}>
     <AppBar position="static">
@@ -84,24 +146,14 @@ return (
       <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
             <MenuIcon />
           </IconButton>
-        <Typography style={{ flex: 1 }} className={classes.title} variant="h6" color="inherit" noWrap>
-        <Button href="/store" size='large' color='inherit'>
-      Infinity Store
-            </Button>
+        <Typography  className={classes.title} variant="h6" color="inherit" noWrap>
+        Infinity Store
         </Typography>
-        <div className={classes.grow} />
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <SearchIcon />
+
+          <div className={classes.grow} />
+            <div className={classes.sectionDesktop}>
+          <MenuHandler classes={classes}/>
           </div>
-          <InputBase
-            placeholder="Search Products…"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-          />
-        </div>
       </Toolbar>
     </AppBar>
   </div>
