@@ -110,7 +110,7 @@ class EnhancedTableHead extends React.Component {
               </TableCell>
             );
           }, this)}
-          <TableCell ><AddButton /></TableCell>
+          <TableCell ><AddButton product={{}}/></TableCell>
         </TableRow>
       </TableHead>
     );

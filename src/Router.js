@@ -11,6 +11,7 @@ const Router = () => (
         <Route path='/dashboard' component={Dashboard} />
         <Route path='/listview' component={ListView} />
         <Route path='/editItem/:id' component={EditPage} />
+        <Route path='/addItem/' component={EditPage} />
     </Switch>
 )
 

@@ -122,7 +122,7 @@ class MenuHandlerButton extends React.Component {
       <div>
             <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-            <IconButton color="inherit" component={Link} to="/listView">
+            <IconButton color="inherit" component={Link} to="/listview">
                   <ListAlt />
               </IconButton>
               {/* <IconButton color="inherit" component={Link} to="/dashboard">

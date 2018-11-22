@@ -18,7 +18,7 @@ class EditPage extends React.Component {
     render() {
     const { classes } = this.props;
     return <div className={classes.root}>
-        <h2>Edit Item</h2>
+        <h2>Product</h2>
         <EditTextField id={this.props.match.params.id} />
     </div>
 }

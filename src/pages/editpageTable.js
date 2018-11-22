@@ -138,7 +138,19 @@ class SaveDialog extends React.Component {
 class TextFields extends React.Component {
     constructor(props) {
         super(props);
-        this.state = this.getProductById(this.props.id);
+
+        if (this.props.id != null && this.props.id.length) {
+            this.state = this.getProductById(this.props.id)
+         }
+         else {
+            this.state = { 
+            barcode: "",
+            brand: "",
+            currency: "",
+            name: "",
+            price: "",
+              }
+         }
     }
 
     getProductById = function (id) {
