@@ -1,6 +1,6 @@
+import axios from 'axios'
 
 export default class ProductService {
-
     data = 
     [
         {
@@ -214,13 +214,19 @@ export default class ProductService {
         return this.myInstance;
     }
 
-    getAllProducts() {
-        return this.data;
+    async getAllProducts() {
+        // http://localhost:5000/item
+        const response = await axios.get('http://localhost:5000/item')
+        return response.data
     }
 
     getProductById(id){
         let index = this.data.findIndex((obj => obj.id === parseInt(id)));
         return this.data[index];
+    }
+
+    findAllByKeyword(keyword) {
+        // 'where keyboard == '
     }
 
     /**this.callBackendAPI(this.state)

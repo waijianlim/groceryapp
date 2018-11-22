@@ -198,18 +198,23 @@ EnhancedTableToolbar.propTypes = {
 EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
 class ListView extends Component {
-
   constructor(props) {
     super(props);
-    let service = ProductService.getInstance();
-    this.state = {
+     this.state = {
       order: "asc",
       orderBy: "title",
-      data: service.getAllProducts(),
+      data: [],
       page: 0,
       selected: [],
       rowsPerPage: 20
     };
+  }
+
+  componentDidMount() {
+    let service = ProductService.getInstance();
+    service.getAllProducts().then((data) => {
+      this.setState({ data: data })
+    })
   }
 
   handleRequestSort = (event, property) => {

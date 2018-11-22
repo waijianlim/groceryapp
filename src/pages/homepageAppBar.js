@@ -4,13 +4,15 @@ import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
+import SearchIcon from '@material-ui/icons/Search';
+import InputBase from '@material-ui/core/InputBase';
 import Typography from '@material-ui/core/Typography';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { withStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
-import Dashboard from '@material-ui/icons/Dashboard';
+// import Dashboard from '@material-ui/icons/Dashboard';
 import ListAlt from '@material-ui/icons/ListAlt';
 import {Link} from 'react-router-dom';
 
@@ -106,12 +108,12 @@ class MenuHandlerButton extends React.Component {
           </IconButton>
           <p>List View</p>
         </MenuItem>
-        <MenuItem component={Link} to="/dashboard" onClick={this.handleMobileMenuClose}>
+        {/* <MenuItem component={Link} to="/dashboard" onClick={this.handleMobileMenuClose}>
           <IconButton  color="inherit">
               <Dashboard />
           </IconButton>
           <p>Dashboard</p>
-        </MenuItem>
+        </MenuItem> */}
         
       </Menu>
     );
@@ -123,9 +125,9 @@ class MenuHandlerButton extends React.Component {
             <IconButton color="inherit" component={Link} to="/listView">
                   <ListAlt />
               </IconButton>
-              <IconButton color="inherit" component={Link} to="/dashboard">
+              {/* <IconButton color="inherit" component={Link} to="/dashboard">
                   <Dashboard />
-              </IconButton>  
+              </IconButton>   */}
             </div>
         {renderMobileMenu}
       </div>
@@ -147,7 +149,18 @@ return (
         <Typography  className={classes.title} variant="h6" color="inherit" noWrap>
         Infinity Store
         </Typography>
-
+        <div className={classes.search}>
+          <div className={classes.searchIcon}>
+            <SearchIcon />
+          </div>
+          <InputBase
+            placeholder="Search Products…"
+            classes={{
+              root: classes.inputRoot,
+              input: classes.inputInput,
+            }}
+          />
+        </div>
           <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
           <MenuHandler classes={classes}/>
