@@ -44,7 +44,6 @@ class EditDeleteButton extends React.Component {
     handleDelete = () => {
         this.handleClose();
         let service = ProductService.getInstance();
-        console.log("handle delete, ", this.props)
         service.deleteItem(this.props.product.id);
     }
 

@@ -12,7 +12,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
 import Dashboard from '@material-ui/icons/Dashboard';
 import ListAlt from '@material-ui/icons/ListAlt';
-import Button from '@material-ui/core/Button';
 import {Link} from 'react-router-dom';
 
 const styles = theme => ({
@@ -138,7 +137,6 @@ const MenuHandler = withStyles(styles)(MenuHandlerButton)
 
 function SearchAppBar(props) {
 const { classes } = props;
-console.log('CLASSSSS', props.classes)
 return (
   <div className={classes.root}>
     <AppBar position="static">

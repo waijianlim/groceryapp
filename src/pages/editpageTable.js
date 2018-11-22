@@ -139,7 +139,6 @@ class TextFields extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.getProductById(this.props.id);
-        console.log ('TextFields', this.state)
     }
 
     getProductById = function (id) {

@@ -204,6 +204,7 @@ export default class ProductService {
             "brand": "ALIENWARE"
         }
     ]
+    runningId = 20;
 
     static myInstance = null;
     static getInstance() {
@@ -214,7 +215,6 @@ export default class ProductService {
     }
 
     getAllProducts() {
-        console.log(this.data)
         return this.data;
     }
 
@@ -228,11 +228,10 @@ export default class ProductService {
         .catch(err => console.log(err)); */
 
     updateItem(item) {
-        console.log("Updating product", item);
         // find index
         let index = this.data.findIndex((obj => obj.id === parseInt(item.id)));
         // update item from list
-        var tempItem = this.data[index];
+        var tempItem = this.data==null?{id:++this.runningId}:this.data[index];
         tempItem.name = item.name;
         tempItem.image = item.image;
         tempItem.barcode = item.barcode;
@@ -243,7 +242,6 @@ export default class ProductService {
     }
 
     deleteItem(id) {
-        console.log("Updating product with index ", id);
         // find index
         let index = this.data.findIndex((obj => obj.id === parseInt(id)));
         // delete item from list
