@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import TablePagination from "@material-ui/core/TablePagination";
 import ProductService from '../product-service'
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import classNames from "classnames";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
@@ -22,6 +23,7 @@ import { lighten } from "@material-ui/core/styles/colorManipulator";
 
 import ButtonONLY from '../features/product-listing/buttonONLY';
 import AddButton from './homepageAddIcon'
+import queryString from 'query-string'
 
 const styles = theme => ({
   root: {
@@ -64,8 +66,8 @@ function getSorting(order, orderBy) {
 }
 
 const headers = [
-  { id: "id",  numeric: true, disablePadding: false, label: "ID" },
-  { id: "name",  numeric: false, disablePadding: true, label: "Product Name" },
+  { id: "id", numeric: true, disablePadding: false, label: "ID" },
+  { id: "name", numeric: false, disablePadding: true, label: "Product Name" },
   { id: "brand", numeric: false, disablePadding: false, label: "Brand" },
   { id: "barcode", numeric: true, disablePadding: false, label: "UPC12 Barcode" },
   { id: "currencyLabel", numeric: true, disablePadding: false, label: "Currency" },
@@ -110,7 +112,7 @@ class EnhancedTableHead extends React.Component {
               </TableCell>
             );
           }, this)}
-          <TableCell ><AddButton product={{}}/></TableCell>
+          <TableCell ><AddButton product={{}} /></TableCell>
         </TableRow>
       </TableHead>
     );
@@ -132,13 +134,13 @@ const toolbarStyles = theme => ({
   highlight:
     theme.palette.type === "light"
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85)
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85)
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark
+      },
   spacer: {
     flex: "1 1 100%"
   },
@@ -165,10 +167,10 @@ let EnhancedTableToolbar = props => {
             {numSelected} selected
           </Typography>
         ) : (
-          <Typography variant="h6" id="tableTitle">
-            Nutrition
+            <Typography variant="h6" id="tableTitle">
+              Nutrition
           </Typography>
-        )}
+          )}
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
@@ -179,12 +181,12 @@ let EnhancedTableToolbar = props => {
             </IconButton>
           </Tooltip>
         ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
-        )}
+            <Tooltip title="Filter list">
+              <IconButton aria-label="Filter list">
+                <FilterListIcon />
+              </IconButton>
+            </Tooltip>
+          )}
       </div>
     </Toolbar>
   );
@@ -198,22 +200,39 @@ EnhancedTableToolbar.propTypes = {
 EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 
 class ListView extends Component {
-  constructor(props) {
-    super(props);
-     this.state = {
-      order: "asc",
-      orderBy: "title",
-      data: [],
-      page: 0,
-      selected: [],
-      rowsPerPage: 20
-    };
-  }
+
+  state = {
+    order: "asc",
+    orderBy: "name",
+    data: [],
+    page: 0,
+    selected: [],
+    rowsPerPage: 20,
+    loading: true,
+    error: null,
+  };
 
   componentDidMount() {
+    this.reloadItems();
+  }
+
+  reloadItems = () => {
+    this.setState({
+      loading: true
+    })
     let service = ProductService.getInstance();
     service.getAllProducts().then((data) => {
-      this.setState({ data: data })
+      this.setState({
+        data: data,
+        loading: false,
+        error: null
+      })
+    }, (error) => {
+      this.setState({
+        data: [],
+        loading: false,
+        error: error,
+      })
     })
   }
 
@@ -238,20 +257,45 @@ class ListView extends Component {
 
   render() {
     const { classes } = this.props;
-    const { data, selected, order, orderBy, rowsPerPage, page } = this.state;
+    const queries = queryString.parse(this.props.location.search)
+    const q = queries.q;
+    const { data, selected, order, orderBy, rowsPerPage, page, loading, error } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+    if (error != null) {
+      return (
+        <div>
+          <h1> ERROR : {error.message}</h1>
+          <p> {error.stack} </p>
+        </div>)
+    }
+
+    var tempData = [];
+    if (q != null && q.length > 0) {
+      let tempQ = q.toLowerCase();
+      tempData = data.filter(e => {
+        return (e.name != null && e.name.toLowerCase().includes(tempQ))
+          || (e.branch != null && e.brand.toLowerCase().includes(tempQ))
+          || (e.currencyLabel != null && e.currencyLabel.toLowerCase().includes(tempQ))
+          || (e.barcode != null && e.barcode.toString().toLowerCase().includes(tempQ))
+          || (e.price != null && e.price.toString().toLowerCase().includes(tempQ))
+      });
+    } else {
+      tempData = data;
+    }
+
     return (
       <Paper className={classes.root}>
+        {loading ? (<LinearProgress />) : null}
         <Table className={classes.table}>
-        <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={this.handleRequestSort}
-              rowCount={data.length}
-            />
+          <EnhancedTableHead
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={this.handleRequestSort}
+            rowCount={tempData.length}
+          />
           <TableBody>
-            {stableSort(data, getSorting(order, orderBy))
+            {stableSort(tempData, getSorting(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map(row => {
                 return (
@@ -261,21 +305,21 @@ class ListView extends Component {
                         <TableCell key={each.id} numeric={each.numeric}>{row[each.id]}</TableCell>
                       )
                     })}
-                    <TableCell><ButtonONLY product={row}/></TableCell>
+                    <TableCell><ButtonONLY product={row} reloadTable={this.reloadItems} showLoading={() => this.setState({ loading: true })} /></TableCell>
                   </TableRow>
                 );
               })}
-              {emptyRows > 0 && data.length < 20 && (
-                <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
+            {emptyRows > 0 && tempData.length < 20 && (
+              <TableRow style={{ height: 49 * emptyRows }}>
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
           </TableBody>
         </Table>
         <TablePagination
           rowsPerPageOptions={[20, 50, 100]}
           component="div"
-          count={data.length}
+          count={tempData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{

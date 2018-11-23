@@ -10,8 +10,8 @@ const Router = () => (
         <Route path="/" exact render={() => <Redirect to="/listview" />} />
         <Route path='/dashboard' component={Dashboard} />
         <Route path='/listview' component={ListView} />
+        <Route path='/editItem/' exact component={EditPage} />
         <Route path='/editItem/:id' component={EditPage} />
-        <Route path='/addItem/' component={EditPage} />
     </Switch>
 )
 

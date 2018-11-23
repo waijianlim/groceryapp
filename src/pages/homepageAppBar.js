@@ -14,7 +14,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
 // import Dashboard from '@material-ui/icons/Dashboard';
 import ListAlt from '@material-ui/icons/ListAlt';
-import {Link} from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
+import queryString from 'query-string';
 
 const styles = theme => ({
   root: {
@@ -91,7 +92,7 @@ class MenuHandlerButton extends React.Component {
 
   render() {
     const { mobileMoreAnchorEl } = this.state;
-    const { classes } = this.props;
+    const { classes, redirectTo } = this.props;
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
     const renderMobileMenu = (
@@ -103,8 +104,11 @@ class MenuHandlerButton extends React.Component {
         onClose={this.handleMobileMenuClose}
       >
         <MenuItem>
-          <IconButton color="inherit"  component={Link} to="/listview" onClick={this.handleMobileMenuClose}>
-              <ListAlt />
+          <IconButton color="inherit" onClick={()=>{
+            redirectTo("/listview", "")
+            this.handleMobileMenuClose();
+          }}>
+            <ListAlt />
           </IconButton>
           <p>List View</p>
         </MenuItem>
@@ -114,21 +118,24 @@ class MenuHandlerButton extends React.Component {
           </IconButton>
           <p>Dashboard</p>
         </MenuItem> */}
-        
+
       </Menu>
     );
 
     return (
       <div>
-            <div className={classes.grow} />
-            <div className={classes.sectionDesktop}>
-            <IconButton color="inherit" component={Link} to="/listview">
-                  <ListAlt />
-              </IconButton>
-              {/* <IconButton color="inherit" component={Link} to="/dashboard">
+        <div className={classes.grow} />
+        <div className={classes.sectionDesktop}>
+          <IconButton color="inherit" onClick={()=>{
+            redirectTo("/listview", "")
+            this.handleMobileMenuClose();
+          }}>
+            <ListAlt />
+          </IconButton>
+          {/* <IconButton color="inherit" component={Link} to="/dashboard">
                   <Dashboard />
               </IconButton>   */}
-            </div>
+        </div>
         {renderMobileMenu}
       </div>
     );
@@ -137,42 +144,86 @@ class MenuHandlerButton extends React.Component {
 
 const MenuHandler = withStyles(styles)(MenuHandlerButton)
 
-function SearchAppBar(props) {
-const { classes } = props;
-return (
-  <div className={classes.root}>
-    <AppBar position="static">
-      <Toolbar>
-      <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
-            <MenuIcon />
-          </IconButton>
-        <Typography  className={classes.title} variant="h6" color="inherit" noWrap>
-        Infinity Store
+class SearchAppBar extends React.Component {
+  state = {
+    q: "",
+  }
+
+  componentDidMount() {
+    console.log("asdf");
+    const queries = queryString.parse(this.props.location.search)
+    const tempq = queries.q;
+    if (this.state.q !== tempq) {
+      this.setState({ q: tempq });
+    }
+  }
+
+  canHaveQ = (e) => {
+    return ["/listview"].includes(e)
+  }
+  
+  callRedirectTo = (url, q) => {
+    if(q !== this.state.q) {
+      this.setState({q:q});
+    }
+    // if has redirectTo text.
+    let canHaveQ = this.canHaveQ(url);
+    console.log("URL ", url, " and can have q: ", canHaveQ)
+    var tempq = "";
+    if (q != null && q.length > 0 && canHaveQ !== -1) {
+      tempq = "?q=" + q;
+    }
+    this.props.history.push(url + tempq);
+  }
+
+  handleSearch = event => {
+    this.setState({
+      q: event.target.value,
+    });
+    this.callRedirectTo(this.props.location.pathname, event.target.value)
+  };
+  render() {
+    const { classes, location } = this.props;
+    const { q } = this.state;
+    let canHaveQ = this.canHaveQ(location.pathname);
+    return (
+      <div className={classes.root}>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton className={classes.menuButton} color="inherit" aria-label="Open drawer">
+              <MenuIcon />
+            </IconButton>
+            <Typography className={classes.title} variant="h6" color="inherit" noWrap>
+              Infinity Store
         </Typography>
-        <div className={classes.search}>
-          <div className={classes.searchIcon}>
-            <SearchIcon />
-          </div>
-          <InputBase
-            placeholder="Search Products…"
-            classes={{
-              root: classes.inputRoot,
-              input: classes.inputInput,
-            }}
-          />
-        </div>
-          <div className={classes.grow} />
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                disabled={!canHaveQ}
+                placeholder="Search Products…"
+                value={q}
+                onChange={this.handleSearch}
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+              />
+            </div>
+            <div className={classes.grow} />
             <div className={classes.sectionDesktop}>
-          <MenuHandler classes={classes}/>
-          </div>
-      </Toolbar>
-    </AppBar>
-  </div>
-);
+              <MenuHandler classes={classes} redirectTo={this.callRedirectTo}/>
+            </div>
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
+  }
 }
 
 SearchAppBar.propTypes = {
-classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SearchAppBar);
+export default withRouter(withStyles(styles)(SearchAppBar));

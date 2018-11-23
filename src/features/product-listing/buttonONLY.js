@@ -43,8 +43,14 @@ class EditDeleteButton extends React.Component {
 
     handleDelete = () => {
         this.handleClose();
+        this.props.showLoading();
         let service = ProductService.getInstance();
-        service.deleteItem(this.props.product.id);
+        service.deleteItem(this.props.product.id)
+        .then((data)=> {
+            this.props.reloadTable();
+        }, (error)=>{
+            console.log("Error on delete: ", error);
+        });
     }
 
     render() {
@@ -70,7 +76,7 @@ class EditDeleteButton extends React.Component {
                   </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.handleDelete} component={Link} to="/listview" color="primary">
+                        <Button onClick={this.handleDelete} color="primary">
                             Delete
                   </Button>
                         <Button onClick={this.handleClose} color="primary" autoFocus>
@@ -85,6 +91,8 @@ class EditDeleteButton extends React.Component {
 
 EditDeleteButton.propTypes = {
     classes: PropTypes.object.isRequired,
+    reloadTable: PropTypes.func.isRequired,
+    showLoading: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(EditDeleteButton);

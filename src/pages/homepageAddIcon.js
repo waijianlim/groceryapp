@@ -18,7 +18,7 @@ function AddButton(props) {
   const { classes } = props;
   return (
     <div>
-      <Button component={Link} to={'/addItem'} variant="fab" color="primary" aria-label="Add" className={classes.button}>
+      <Button component={Link} to={'/editItem'} variant="fab" color="primary" aria-label="Add" className={classes.button}>
         <AddIcon />
       </Button>
     </div>

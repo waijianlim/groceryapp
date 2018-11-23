@@ -24,7 +24,6 @@ Page 1
     4. Search result should include all possibilities based on keywords found in Brand or Product Name fields
     5. You may use GET or POST methods for the search
 
-
 Page 2
 
 1. Edit product form (mandatory fields)
