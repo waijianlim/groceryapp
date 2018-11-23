@@ -1,12 +1,22 @@
 import React from 'react'
 import EditTextField from './editpageTable'
+import { withStyles } from "@material-ui/core/styles";
+import Paper from '@material-ui/core/Paper';
 
+const styles = theme => ({
+    root: {
+        margin: 15,
+    },
+});
 
-export default class EditPage extends React.Component {
+class EditPage extends React.Component {
     render() {
         return (
-            <EditTextField id={this.props.match.params.id} />
+            <Paper className={this.props.classes.root}>
+                <EditTextField id={this.props.match.params.id} />
+            </Paper>
 
         )
     }
 }
+export default withStyles(styles)(EditPage);

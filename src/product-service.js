@@ -9,9 +9,20 @@ export default class ProductService {
         return this.myInstance;
     }
 
-    async getAllProducts() {
-        // http://localhost:5000/item
-        const response = await axios.get('/item')
+    async getAllProducts(keys) {
+        let queries = [];
+        if(keys.nameQ != null && keys.nameQ.length > 0) {
+            queries.push("nameQ=" + keys.nameQ);
+        }
+        if(keys.brandQ != null && keys.brandQ.length > 0) {
+            queries.push("brandQ=" + keys.brandQ);
+        }
+        let query = "";
+        if(queries.length > 0) {
+            query= "?" + queries.join("&");
+        }
+
+        const response = await axios.get('/item'+query)
         return response.data.map(e => this.formatItem(e));
     }
 

@@ -9,7 +9,11 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import TablePagination from "@material-ui/core/TablePagination";
 import ProductService from '../product-service'
+import TextField from '@material-ui/core/TextField';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Button from '@material-ui/core/Button';
+import { withRouter } from 'react-router-dom';
+import SearchIcon from '@material-ui/icons/Search';
 
 import classNames from "classnames";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
@@ -30,6 +34,30 @@ const styles = theme => ({
     width: 'auto',
     margin: 10,
     overflowX: 'auto',
+  },
+  mainSearch: {
+    width: 'auto',
+    overflowX: 'auto',
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
+  button: {
+    margin: theme.spacing.unit + 10,
+  },
+  mainTable: {
+    width: 'auto',
+    marginTop: 10,
+    overflowX: 'auto',
+  },
+  icon: {
+    marginTop: theme.spacing.unit * 2 + 10,
+    margin: theme.spacing.unit * 2,
   },
   paper: {
     padding: 15,
@@ -210,9 +238,36 @@ class ListView extends Component {
     rowsPerPage: 20,
     loading: true,
     error: null,
+    nameQ: "",
+    brandQ: "",
   };
 
   componentDidMount() {
+    const queries = queryString.parse(this.props.location.search)
+    this.setState({ 
+      nameQ: queries.nameQ!=null?queries.nameQ:"",
+      brandQ: queries.brandQ!=null?queries.brandQ:"",
+     },()=>{
+      this.reloadItems();
+     }
+    );
+  }
+
+  searchAction = () => {
+    // update url
+    const {nameQ, brandQ} = this.state;
+    let queries = [];
+    if(nameQ != null && nameQ.length > 0) {
+        queries.push("nameQ=" + nameQ);
+    }
+    if(brandQ != null && brandQ.length > 0) {
+        queries.push("brandQ=" + brandQ);
+    }
+    let query = "";
+    if(queries.length > 0) {
+        query= "?" + queries.join("&");
+    }
+    this.props.history.push(this.props.location.pathname + query);
     this.reloadItems();
   }
 
@@ -221,7 +276,8 @@ class ListView extends Component {
       loading: true
     })
     let service = ProductService.getInstance();
-    service.getAllProducts().then((data) => {
+    const {nameQ, brandQ} = this.state;
+    service.getAllProducts({nameQ:nameQ, brandQ:brandQ}).then((data) => {
       this.setState({
         data: data,
         loading: false,
@@ -255,11 +311,15 @@ class ListView extends Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
+  };
+
   render() {
     const { classes } = this.props;
-    const queries = queryString.parse(this.props.location.search)
-    const q = queries.q;
-    const { data, selected, order, orderBy, rowsPerPage, page, loading, error } = this.state;
+    const { data, selected, order, orderBy, rowsPerPage, page, loading, error, nameQ, brandQ } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
     if (error != null) {
       return (
@@ -268,70 +328,80 @@ class ListView extends Component {
           <p> {error.stack} </p>
         </div>)
     }
-
-    var tempData = [];
-    if (q != null && q.length > 0) {
-      let tempQ = q.toLowerCase();
-      tempData = data.filter(e => {
-        return (e.name != null && e.name.toLowerCase().includes(tempQ))
-          || (e.branch != null && e.brand.toLowerCase().includes(tempQ))
-          || (e.currencyLabel != null && e.currencyLabel.toLowerCase().includes(tempQ))
-          || (e.barcode != null && e.barcode.toString().toLowerCase().includes(tempQ))
-          || (e.price != null && e.price.toString().toLowerCase().includes(tempQ))
-      });
-    } else {
-      tempData = data;
-    }
-
     return (
-      <Paper className={classes.root}>
-        {loading ? (<LinearProgress />) : null}
-        <Table className={classes.table}>
-          <EnhancedTableHead
-            numSelected={selected.length}
-            order={order}
-            orderBy={orderBy}
-            onRequestSort={this.handleRequestSort}
-            rowCount={tempData.length}
+      <div className={classes.root}>
+        <Paper className={classes.mainSearch}>
+                <SearchIcon className={classes.icon} />
+          <TextField
+            id="standard-name"
+            label="Name"
+            className={classes.textField}
+            value={nameQ}
+            onChange={this.handleChange('nameQ')}
+            margin="normal"
           />
-          <TableBody>
-            {stableSort(tempData, getSorting(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map(row => {
-                return (
-                  <TableRow hover key={row.id}>
-                    {headers.map(each => {
-                      return (
-                        <TableCell key={each.id} numeric={each.numeric}>{row[each.id]}</TableCell>
-                      )
-                    })}
-                    <TableCell><ButtonONLY product={row} reloadTable={this.reloadItems} showLoading={() => this.setState({ loading: true })} /></TableCell>
-                  </TableRow>
-                );
-              })}
-            {emptyRows > 0 && tempData.length < 20 && (
-              <TableRow style={{ height: 49 * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[20, 50, 100]}
-          component="div"
-          count={tempData.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          backIconButtonProps={{
-            "aria-label": "Previous Page"
-          }}
-          nextIconButtonProps={{
-            "aria-label": "Next Page"
-          }}
-          onChangePage={this.handleChangePage}
-          onChangeRowsPerPage={this.handleChangeRowsPerPage}
-        />
-      </Paper>
+          <TextField
+            id="standard-name"
+            label="Brand"
+            className={classes.textField}
+            value={brandQ}
+            onChange={this.handleChange('brandQ')}
+            margin="normal"
+          />
+          <Button variant="contained" color="primary" className={classes.button} onClick={this.searchAction}>
+            Search
+      </Button>
+
+        </Paper>
+        <Paper className={classes.mainTable}>
+          {loading ? (<LinearProgress />) : null}
+          <Table className={classes.table}>
+            <EnhancedTableHead
+              numSelected={selected.length}
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={this.handleRequestSort}
+              rowCount={data.length}
+            />
+            <TableBody>
+              {stableSort(data, getSorting(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map(row => {
+                  return (
+                    <TableRow hover key={row.id}>
+                      {headers.map(each => {
+                        return (
+                          <TableCell key={each.id} numeric={each.numeric}>{row[each.id]}</TableCell>
+                        )
+                      })}
+                      <TableCell><ButtonONLY product={row} reloadTable={this.reloadItems} showLoading={() => this.setState({ loading: true })} /></TableCell>
+                    </TableRow>
+                  );
+                })}
+              {emptyRows > 0 && data.length < 20 && (
+                <TableRow style={{ height: 49 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[20, 50, 100]}
+            component="div"
+            count={data.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            backIconButtonProps={{
+              "aria-label": "Previous Page"
+            }}
+            nextIconButtonProps={{
+              "aria-label": "Next Page"
+            }}
+            onChangePage={this.handleChangePage}
+            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+          />
+        </Paper>
+      </div>
     );
   }
 }
@@ -340,4 +410,4 @@ ListView.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ListView);
+export default withRouter(withStyles(styles)(ListView));

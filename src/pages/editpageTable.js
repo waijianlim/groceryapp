@@ -47,6 +47,9 @@ const styles = theme => ({
     iconSmall: {
         fontSize: 20,
     },
+    title: {
+        padding: 15,
+    },
 });
 
 const currencies = [
@@ -198,10 +201,15 @@ class TextFields extends React.Component {
 
     handleNumberChange = name => event => {
         const re = /^[0-9\b]+$/;
-
-        if (event.target.value === '' || re.test(event.target.value)) {
-            this.handleChange(name)(event);
+        const val = event.target.value;
+        // guard conditions
+        if (val !== '' && !re.test(val)) {
+            return;
         }
+        if(val !== '' && val.length > 12) {
+            event.target.value = val.substring(0,12);
+        }
+        this.handleChange(name)(event);
     }
 
     render() {
@@ -220,7 +228,7 @@ class TextFields extends React.Component {
         }
         return (
             <div>
-                <h2>Product</h2>
+                <h2 className={classes.title}>Product</h2>
                 <form
                     size="px"
                     className={classes.container}
